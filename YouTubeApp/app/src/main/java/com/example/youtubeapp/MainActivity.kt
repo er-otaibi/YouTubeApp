@@ -35,8 +35,6 @@ class MainActivity : AppCompatActivity() {
         rvMain = findViewById(R.id.rvMain)
         clMain = findViewById(R.id.clMain)
 
-        // btnArray[0] = playVideo("YE7VzlLtp-4")
-
         val layoutManager = LinearLayoutManager(this)
         myVideo.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
@@ -49,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
-        //playVideo("CiFyTc1SwPw")
+      
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -61,30 +59,36 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        currentVideo = savedInstanceState.getInt("currentVidio")
-        timeStamp = savedInstanceState.getFloat("time")
+        currentVideo = savedInstanceState.getInt("currentVidio" , 0 )
+        timeStamp = savedInstanceState.getFloat("time" , 0f )
 
         // counter.text = count.toString()
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+            myVideo.enterFullScreen()
+        } else if (newConfig.orientation === Configuration.ORIENTATION_PORTRAIT) {
+            myVideo.exitFullScreen()
+        }
+    }
+
+
+
+    private fun checkInternet(){
+        if(!connectedToInternet()){
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("Internet Connection Not Found")
+                .setPositiveButton("RETRY"){_, _ -> checkInternet()}
+                .show()
+        }
+    }
+
+    private fun connectedToInternet(): Boolean{
+        val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        return activeNetwork?.isConnectedOrConnecting == true
+    }
 }
-//    fun  playVideo(id: String){
-//
-//        myVideo.getPlayerUiController().showFullscreenButton(true)
-//        myVideo.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-//            override fun onReady(@NonNull youTubePlayer: YouTubePlayer) {
-//                val videoId = id
-//                youTubePlayer.cueVideo(videoId, 0f)
-//            }
-//        })
-//    }
-    //data class myButton(val name: String , val id: String)
-//
-//    object myVideoLliat {
-//        val myBtn = arrayListOf<myButton>(myButton("number Game" , "YE7VzlLtp-4"),
-//            myButton("phrase Game" , "YE7VzlLtp-4"),
-//            myButton("movie Game" , "YE7VzlLtp-4"),
-//            myButton("hang man Game" , "YE7VzlLtp-4"),
-//            myButton("T/F Game" , "YE7VzlLtp-4"))
-//
-//
-//    }
+
